@@ -92,38 +92,6 @@ class SortingRobot:
         """
         return self._light == "ON"
 
-    def find_lowest(self):
-        # turn on light while performing operation
-        self.set_light_on()
-
-        while self.light_is_on():
-            # if held item is larger, swap
-            if self.compare_item() == 1:
-                self.swap_item()
-            
-            # if end of list reached, turn off light
-            if self.can_move_right() is False:
-                self.set_light_off()
-            else:
-                self.move_right()
-
-    def place_low(self):
-        self.set_light_on()
-
-        while self.light_is_on():
-            self.move_left()
-            if self.compare_item() is None:
-                self.swap_item()
-                if self.can_move_right():
-                    self.move_right()
-                    self.set_light_off()
-                else:
-                    while self.light_is_on():
-                        if self.can_move_left():
-                            self.move_left()
-                        else:
-                            self.set_light_off()
-
     def place_higher(self):
 
         # until robot reaches end of list...
@@ -136,23 +104,26 @@ class SortingRobot:
                 self.move_right()
 
     def place_lower(self):
-        self.set_light_on()
-        while self.light_is_on():
+        # until robot reaches None
+        while self.compare_item() != None:
             if self.compare_item() == 1:
                 self.swap_item()
                 self.move_left()                
-            if self.compare_item() == None:
-                self.swap_item()
-                self.move_right()
-                if self.can_move_right():
-                    self.swap_item()
-                    self.move_right()
-                    self.set_light_off()
-                else:
-                    self.swap_item()
-                    self.set_light_off()
             else:
                 self.move_left()
+        # Move None up one index
+        if self.compare_item() == None:
+            self.swap_item()
+            self.move_right()
+            # Check to see if at end of list
+            if self.can_move_right():
+                # If not, Place None at new end of sorted beginning
+                self.swap_item()
+                self.move_right()
+                # self.set_light_off()
+            else:
+                self.swap_item()
+                self.set_light_on()
 
 
     # def find_highest(self):
@@ -173,22 +144,32 @@ class SortingRobot:
         # As robot travels down, swap for lowest value and place at None
 
         #place None at beginning of list and move one index right
-        if not self.can_move_left:
+        if self.can_move_left() is False:
             self.swap_item()
             self.move_right()
+            # Light on means that the robot is sorting, will be
+            # needed to remove None from middle of list at end
+            self.set_light_on()
 
             # move up the list and collect the lowest item
-            self.find_lowest()
-            # place the first low
-            self.place_low()
+            # self.find_lowest()
+            # # place the first low
+            # self.place_low()
 
         self.place_higher()
         self.place_lower()
 
+        # Check to see if robot has reached end of list
         if self.can_move_right():
+            # If not at end, keep sorting
             self.sort()
-
-        
+        else:
+            while self.light_is_on():
+                if self.compare_item() == None:
+                    self.swap_item()
+                    self.set_light_off()
+                else:
+                    self.move_left()
 
 
 if __name__ == "__main__":
