@@ -92,20 +92,92 @@ class SortingRobot:
         """
         return self._light == "ON"
 
+    def place_higher(self):
+
+        # until robot reaches end of list...
+        while self.can_move_right():
+            # if held item is lower, swap and move right, else move right
+            if self.compare_item() == -1:
+                self.swap_item()
+                self.move_right()
+            else:
+                self.move_right()
+
+    def place_lower(self):
+        # until robot reaches None
+        while self.compare_item() != None:
+            if self.compare_item() == 1:
+                self.swap_item()
+                self.move_left()                
+            else:
+                self.move_left()
+        # Move None up one index
+        if self.compare_item() == None:
+            self.swap_item()
+            self.move_right()
+            # Check to see if at end of list
+            if self.can_move_right():
+                # If not, Place None at new end of sorted beginning
+                self.swap_item()
+                self.move_right()
+                # self.set_light_off()
+            else:
+                self.swap_item()
+                self.set_light_on()
+
+
+    # def find_highest(self):
+    #     self.set_light_on()
+
+    #     while self.light_is_on():
+    #         pass
+
+
     def sort(self):
         """
         Sort the robot's list.
         """
-        # Fill this out
-        pass
+        # Find the smallest value and place it at the beginning
+        # Use the None value to mark the division between the sorted and unsorted
+        #  parts of the array
+        # As robot travels up, swap for greatest value and place at end
+        # As robot travels down, swap for lowest value and place at None
+
+        #place None at beginning of list and move one index right
+        if self.can_move_left() is False:
+            self.swap_item()
+            self.move_right()
+            # Light on means that the robot is sorting, will be
+            # needed to remove None from middle of list at end
+            self.set_light_on()
+
+            # move up the list and collect the lowest item
+            # self.find_lowest()
+            # # place the first low
+            # self.place_low()
+
+        self.place_higher()
+        self.place_lower()
+
+        # Check to see if robot has reached end of list
+        if self.can_move_right():
+            # If not at end, keep sorting
+            self.sort()
+        else:
+            while self.light_is_on():
+                if self.compare_item() == None:
+                    self.swap_item()
+                    self.set_light_off()
+                else:
+                    self.move_left()
 
 
 if __name__ == "__main__":
     # Test our your implementation from the command line
     # with `python robot_sort.py`
 
-    l = [15, 41, 58, 49, 26, 4, 28, 8, 61, 60, 65, 21, 78, 14, 35, 90, 54, 5, 0, 87, 82, 96, 43, 92, 62, 97, 69, 94, 99, 93, 76, 47, 2, 88, 51, 40, 95, 6, 23, 81, 30, 19, 25, 91, 18, 68, 71, 9, 66, 1, 45, 33, 3, 72, 16, 85, 27, 59, 64, 39, 32, 24, 38, 84, 44, 80, 11, 73, 42, 20, 10, 29, 22, 98, 17, 48, 52, 67, 53, 74, 77, 37, 63, 31, 7, 75, 36, 89, 70, 34, 79, 83, 13, 57, 86, 12, 56, 50, 55, 46]
-
+    # l = [15, 41, 58, 49, 26, 4, 28, 8, 61, 60, 65, 21, 78, 14, 35, 90, 54, 5, 0, 87, 82, 96, 43, 92, 62, 97, 69, 94, 99, 93, 76, 47, 2, 88, 51, 40, 95, 6, 23, 81, 30, 19, 25, 91, 18, 68, 71, 9, 66, 1, 45, 33, 3, 72, 16, 85, 27, 59, 64, 39, 32, 24, 38, 84, 44, 80, 11, 73, 42, 20, 10, 29, 22, 98, 17, 48, 52, 67, 53, 74, 77, 37, 63, 31, 7, 75, 36, 89, 70, 34, 79, 83, 13, 57, 86, 12, 56, 50, 55, 46]
+    l = [5, 3, 4, 2, 1]
     robot = SortingRobot(l)
 
     robot.sort()
